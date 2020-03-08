@@ -8,6 +8,11 @@ public class StudentMap<K, V> implements Map<K, V> {
     private int size;
     private Node<K, V>[] arr;
 
+    private static class Node<K, V> {
+        private K key;
+        private V value;
+        private Node<K, V> next;
+    }
     public StudentMap(int capacity) {
         arr = new Node[capacity];
     }
@@ -25,10 +30,8 @@ public class StudentMap<K, V> implements Map<K, V> {
 
         if (arr[index] == null) {
             arr[index] = node;
-            this.size++;
         } else {
             Node<K, V> tempNode = arr[index];
-
             while (tempNode != null) {
                 if (arr[index].key.equals(node.key)) {
                     V prevValue = arr[index].value;
@@ -38,17 +41,17 @@ public class StudentMap<K, V> implements Map<K, V> {
 
                 if (tempNode.next == null) {
                     tempNode.next = node;
-                    this.size++;
                     break;
                 }
                 tempNode = tempNode.next;
             }
         }
+        this.size++;
         return null;
     }
 
     public int bucketIndex(Object key) {
-        return Math.abs(key.hashCode()) % DEFAULT_CAPACITY;
+        return 1;//Math.abs(key.hashCode()) % DEFAULT_CAPACITY;
     }
 
     @Override
@@ -76,22 +79,16 @@ public class StudentMap<K, V> implements Map<K, V> {
         return false;
     }
 
+
     @Override
     public boolean containsValue(Object o) {
-        for (int i = 0; i < arr.length; i++) {
-            if ((arr[i] != null) && (arr[i].next == null)) {
-                if (arr[i].value.equals(o)) {
+        for (Node<K, V> kvNode : arr) {
+            Node<K, V> tempNode = kvNode;
+            while (tempNode != null) {
+                if (tempNode.value.equals(o)) {
                     return true;
-                }
-            } else if (arr[i] != null && arr[i].next != null) {
-                Node<K, V> tempNode = arr[i];
-                while (tempNode != null) {
-
-                    if (tempNode.value.equals(o)) {
-                        return true;
-                    } else {
-                        tempNode = tempNode.next;
-                    }
+                } else {
+                    tempNode = tempNode.next;
                 }
             }
         }
@@ -210,12 +207,5 @@ public class StudentMap<K, V> implements Map<K, V> {
         }
         return "";
     }
-
-    private static class Node<K, V> {
-        private K key;
-        private V value;
-        private Node<K, V> next;
-    }
-
 }
 

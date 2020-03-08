@@ -40,7 +40,7 @@ public class Main {
         System.out.println(breakLine);
         System.out.println("Contains Key: " + map.containsKey(st5));
         System.out.println(breakLine);
-        System.out.println("Contains value: " + map.containsValue(4));
+        System.out.println("Contains value: " + map.containsValue(2));
         System.out.println(breakLine);
 
         System.out.println("Map Size Method = " + map.size());
@@ -59,7 +59,7 @@ public class Main {
         System.out.println(breakLine);
         System.out.println("Method get for st7: " + map.get(st7));
         System.out.println(breakLine);
-        map.remove(st1);
+        map.remove(st6);
         ArrayList<Integer> arr2 = (ArrayList) map.values();
 
         for (Integer integer : arr2) {
@@ -67,9 +67,9 @@ public class Main {
         }
         System.out.println(breakLine);
 
-        map.remove(st4);
-        map.remove(st3);
-        map.remove(st7);
+        map.remove(st1);
+        map.remove(st2);
+       // map.remove(st7);
         map.remove(st5);
         System.out.println("Test remove() method:");
         System.out.println(map);
