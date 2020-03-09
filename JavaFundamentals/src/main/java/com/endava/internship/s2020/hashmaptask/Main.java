@@ -1,13 +1,11 @@
 package com.endava.internship.s2020.hashmaptask;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.ListIterator;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class Main {
     public static void main(String[] args) {
+
         String breakLine = "\n------------------------------------------\n";
 
         Student st1 = new Student("Vasilii", LocalDate.ofYearDay(1998, 6), "student");
@@ -24,30 +22,35 @@ public class Main {
         map.put(st1, 10);
         map.put(st1, 11);
         map.put(st7, 4);
-        map.put(st3, 33);
+        map.put(st3, null);
 
         map2.put(st4, 1);
         map2.put(st5, 2);
         map2.put(st6, 6);
+        map2.put(null, 8);
 
         map.putAll(map2);
         map.put(st2, 44);
+
 
         System.out.println("|----------------------------------------------|\n"
                 + "           StudentMap implementation : \n" +
                 "|----------------------------------------------|");
         System.out.println("isEmpty method(after put method) = " + map.isEmpty());
         System.out.println(breakLine);
-        System.out.println("Contains Key: " + map.containsKey(st5));
+        System.out.println("Contains Key: " + map.containsKey(null));
         System.out.println(breakLine);
-        System.out.println("Contains value: " + map.containsValue(2));
+        System.out.println("Contains value: " + map.containsValue(null));
         System.out.println(breakLine);
 
         System.out.println("Map Size Method = " + map.size());
         System.out.println(breakLine);
         Set<Student> keySet = map.keySet();
         System.out.println("KeySet Method : \n");
-        System.out.println(keySet);
+        Iterator iterator = keySet.iterator();
+        while(iterator.hasNext()) {
+            System.out.println(iterator.next() + "\n");
+        }
         System.out.println(breakLine);
         ArrayList<Integer> arr = (ArrayList) map.values();
         ListIterator<Integer> iter = arr.listIterator();
@@ -57,9 +60,9 @@ public class Main {
         }
         System.out.println("end values");
         System.out.println(breakLine);
-        System.out.println("Method get for st7: " + map.get(st7));
+        System.out.println("Method get for null: " + map.get(null));
         System.out.println(breakLine);
-        map.remove(st6);
+        map.remove(st1);
         ArrayList<Integer> arr2 = (ArrayList) map.values();
 
         for (Integer integer : arr2) {
@@ -67,10 +70,9 @@ public class Main {
         }
         System.out.println(breakLine);
 
-        map.remove(st1);
         map.remove(st2);
-       // map.remove(st7);
-        map.remove(st5);
+        map.remove(st7);
+        map.remove(st6);
         System.out.println("Test remove() method:");
         System.out.println(map);
         System.out.println("Size = " + map.size());

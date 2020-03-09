@@ -8,13 +8,11 @@ public class StudentMap<K, V> implements Map<K, V> {
     private int size;
     private Node<K, V>[] arr;
 
-    private static class Node<K, V> {
-        private K key;
-        private V value;
-        private Node<K, V> next;
-    }
-    public StudentMap(int capacity) {
-        arr = new Node[capacity];
+    public StudentMap(int newCapacity) {
+        if (newCapacity <= 0) {
+            throw new IllegalArgumentException("Argument must be non-negative and greater than 0!");
+        }
+        arr = new Node[newCapacity];
     }
 
     public StudentMap() {
@@ -33,12 +31,11 @@ public class StudentMap<K, V> implements Map<K, V> {
         } else {
             Node<K, V> tempNode = arr[index];
             while (tempNode != null) {
-                if (arr[index].key.equals(node.key)) {
+                if (Objects.equals(arr[index].key, node.key)) {
                     V prevValue = arr[index].value;
                     arr[index].value = node.value;
                     return prevValue;
                 }
-
                 if (tempNode.next == null) {
                     tempNode.next = node;
                     break;
@@ -51,7 +48,10 @@ public class StudentMap<K, V> implements Map<K, V> {
     }
 
     public int bucketIndex(Object key) {
-        return 1;//Math.abs(key.hashCode()) % DEFAULT_CAPACITY;
+        if (Objects.equals(key, null)) {
+            return 0;
+        }
+        return Math.abs(key.hashCode()) % arr.length;
     }
 
     @Override
@@ -66,30 +66,29 @@ public class StudentMap<K, V> implements Map<K, V> {
 
     @Override
     public boolean containsKey(Object o) {
-
-        int index = bucketIndex(o.hashCode());
+        int index;
+        if (Objects.equals(o, null)) {
+            index = bucketIndex(o);
+        } else index = bucketIndex(o.hashCode());
         Node<K, V> tmpNode = arr[index];
         while (tmpNode != null) {
-            if (tmpNode.key.equals(o)) {
+            if (Objects.equals(tmpNode.key, o)) {
                 return true;
-            } else {
-                tmpNode = tmpNode.next;
             }
+            tmpNode = tmpNode.next;
         }
         return false;
     }
-
 
     @Override
     public boolean containsValue(Object o) {
         for (Node<K, V> kvNode : arr) {
             Node<K, V> tempNode = kvNode;
             while (tempNode != null) {
-                if (tempNode.value.equals(o)) {
+                if (Objects.equals(tempNode.value, o)) {
                     return true;
-                } else {
-                    tempNode = tempNode.next;
                 }
+                tempNode = tempNode.next;
             }
         }
         return false;
@@ -97,29 +96,31 @@ public class StudentMap<K, V> implements Map<K, V> {
 
     @Override
     public V get(Object o) {
-        int index = bucketIndex(o.hashCode());
+        int index;
+        if (Objects.equals(o, null)) {
+            index = bucketIndex(o);
+        } else index = bucketIndex(o.hashCode());
         Node<K, V> nodeTmp = arr[index];
-        if (nodeTmp.next == null) {
-            if (nodeTmp.key.equals(o)) {
+        while (nodeTmp != null) {
+            if (Objects.equals(nodeTmp.key, o)) {
                 return nodeTmp.value;
-            } else return null;
-        } else {
-            while (nodeTmp != null) {
-                if (nodeTmp.key.equals(o)) {
-                    return nodeTmp.value;
-                }
-                nodeTmp = nodeTmp.next;
             }
+            nodeTmp = nodeTmp.next;
         }
         return null;
     }
 
     @Override
     public V remove(Object o) {
-        int removedIndex = bucketIndex(o.hashCode());
+        int removedIndex;
         V removedValue;
+        if (Objects.equals(null, o)) {
+            removedIndex = bucketIndex(o);
+        } else {
+            removedIndex = bucketIndex(o.hashCode());
+        }
         if (arr[removedIndex] != null) {
-            if (arr[removedIndex].key.equals(o)) {
+            if (Objects.equals(arr[removedIndex].key, o)) {
                 if (arr[removedIndex].next == null) {
                     removedValue = arr[removedIndex].value;
                     arr[removedIndex] = null;
@@ -130,17 +131,18 @@ public class StudentMap<K, V> implements Map<K, V> {
                 this.size--;
                 return removedValue;
             }
-        }
-        if (arr[removedIndex].next != null) {
-            Node<K, V> nodeTmp = arr[removedIndex];
-            while (nodeTmp.next != null) {
-                if (nodeTmp.next.key.equals(o)) {
-                    removedValue = nodeTmp.next.value;
-                    nodeTmp.next = nodeTmp.next.next;
-                    this.size--;
-                    return removedValue;
+
+            if (arr[removedIndex].next != null) {
+                Node<K, V> nodeTmp = arr[removedIndex];
+                while (nodeTmp.next != null) {
+                    if (Objects.equals(nodeTmp.next.key, o)) {
+                        removedValue = nodeTmp.next.value;
+                        nodeTmp.next = nodeTmp.next.next;
+                        this.size--;
+                        return removedValue;
+                    }
+                    nodeTmp = nodeTmp.next;
                 }
-                nodeTmp = nodeTmp.next;
             }
         }
         return null;
@@ -163,14 +165,12 @@ public class StudentMap<K, V> implements Map<K, V> {
     @Override
     public Set<K> keySet() {
         Set<K> keySet = new HashSet<>();
-        Node<K, V> node1;
-        if (size != 0) {
-            for (Node<K, V> kvNode : arr) {
-                node1 = kvNode;
-                while (node1 != null) {
-                    keySet.add(node1.key);
-                    node1 = node1.next;
-                }
+        Node<K, V> tempNode;
+        for (Node<K, V> kvNode : arr) {
+            tempNode = kvNode;
+            while (tempNode != null) {
+                keySet.add(tempNode.key);
+                tempNode = tempNode.next;
             }
         }
         return keySet;
@@ -178,15 +178,11 @@ public class StudentMap<K, V> implements Map<K, V> {
 
     @Override
     public Collection<V> values() {
-        ArrayList<V> listOfValues = new ArrayList<>();
-        if (size == 0) {
-            return listOfValues;
-        } else {
-            for (Node<K, V> studentNode : arr) {
-                while (studentNode != null) {
-                    listOfValues.add(studentNode.value);
-                    studentNode = studentNode.next;
-                }
+        List<V> listOfValues = new ArrayList<>();
+        for (Node<K, V> kvNode : arr) {
+            while (kvNode != null) {
+                listOfValues.add(kvNode.value);
+                kvNode = kvNode.next;
             }
         }
         return listOfValues;
@@ -197,15 +193,27 @@ public class StudentMap<K, V> implements Map<K, V> {
         //Ignore this for homework
         throw new UnsupportedOperationException();
     }
-
+    //
     @Override
     public String toString() {
-        Student[] arrList = new Student[keySet().size()];
+        K[] arrList = (K[]) new Object[keySet().size()];
+        StringBuilder stringBuilder = new StringBuilder("{");
         this.keySet().toArray(arrList);
-        for (Student key : arrList) {
-            System.out.println("\nValue : " + this.get(key) + "\n" + key.toString());
+        for (K key : arrList) {
+            if (!Objects.equals(key, null)) {
+                stringBuilder.append(key.toString() + " = " + this.get(key) + ",\n");
+            } else {
+                stringBuilder.append(null + " = " + this.get(key) + ",\n");
+            }
         }
-        return "";
+        stringBuilder.append("}");
+        return stringBuilder.toString();
+    }
+
+    private static class Node<K, V> {
+        private K key;
+        private V value;
+        private Node<K, V> next;
     }
 }
 
